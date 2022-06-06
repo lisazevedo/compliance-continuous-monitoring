@@ -1,0 +1,29 @@
+version: "3.3" 
+services:
+  app:
+    build: api/
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - 8080:8080
+    command: ["--host", "0.0.0.0","--port","8080"]
+    environment:
+      - MYSQL_DB_HOST=mysql
+      - MYSQL_DB_NAME=agentdb
+      - MYSQL_DB_USER=
+      - MYSQL_DB_PASSWORD=
+
+  db:
+    container_name: "mysql"
+    image: mysql:8.0.3
+    restart: always
+    volumes:
+      - ./data:/var/lib/mysql
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_DATABASE=agentdb
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      - MYSQL_DB_USER=
+      - MYSQL_DB_PASSWORD=
