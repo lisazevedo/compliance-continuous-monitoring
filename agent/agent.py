@@ -1,6 +1,4 @@
-import sys
-import subprocess 
-import shlex
+import os, subprocess, shlex, psutil
 
 def get_host_ip():
     bashCommand = shlex.split("hostname -I")
@@ -32,15 +30,27 @@ def get_users():
     return users
 
 def get_pid():
-    bashCommand = shlex.split("ps aux")
-    process = subprocess.Popen(bashCommand, stdout=subprocess.PIPE)
-    output, error = process.communicate()
-    users = []
+    users = os.popen("ps aux | awk '{print $1}'")
+    pid = os.popen("ps aux | awk '{print $2}'")
+    outputUsers = list(users.read().split("\n"))
+    outputPid = list(pid.read().split("\n"))
+    users.close()
+    pid.close()
 
-    for line in output.splitlines():
-        users.append(line.decode("utf-8").split(' ')[0])
+    res = {}
+    for key in outputPid:
+        for value in outputUsers:
+            res[key] = value
+            outputUsers.remove(value)
+            break
     
-    return users
+    res.popitem()  
+    res.pop('PID')
+    
+    return res
 
+def get_usage_cpu():
+    return psutil.cpu_percent(2)
+        
 if __name__ == '__main__':
-    print(get_pid())
+    get_usage_cpu()
