@@ -72,7 +72,7 @@ def get_pid():
 
     return obj
 
-def get_usage_cpu():
+def get_cpu_usage():
     
     obj = {
         'host': get_host_ip(),
@@ -91,7 +91,7 @@ if __name__ == '__main__':
     elif sys.argv[1] == "so-version":
         print(get_so_version())
     elif sys.argv[1] == "cpu":
-        print(get_usage_cpu())
+        print(get_cpu_usage())
     else:
         print("\ninvalid option!\n")
         print("python3 "+sys.argv[0]+" so-name    -   Send SO name")

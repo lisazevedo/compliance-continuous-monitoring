@@ -1,22 +1,20 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from pydantic import BaseModel, validator
-
-from projects import generic_validators
-from projects.schemas.deployment import Deployment
-from projects.schemas.experiment import Experiment
-from projects.utils import to_camel_case, MAX_CHARS_ALLOWED, FORBIDDEN_CHARACTERS_REGEX, MAX_CHARS_ALLOWED_DESCRIPTION
-
 
 class CpuBase(BaseModel):
     class Config:
         allow_population_by_field_name = True
         orm_mode = True
 
+class CpuCreate(CpuBase):
+    host: str
+    cpu_usage: str
+
 class Cpu(CpuBase):
     uuid: str
-    usage_cpu: str
+    cpu_usage: str
     host: str
     created_at: datetime
 

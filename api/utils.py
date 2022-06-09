@@ -3,6 +3,8 @@
 
 from datetime import datetime, timezone
 import sqlalchemy as sa
+import uuid
+import random
 
 class TimeStamp(sa.types.TypeDecorator):
     impl = sa.types.DateTime
@@ -21,3 +23,17 @@ class TimeStamp(sa.types.TypeDecorator):
         
 def now():
     return datetime.utcnow().replace(tzinfo=timezone.utc)
+
+def uuid_alpha():
+    """
+    Generates an uuid that always starts with an alpha char.
+
+    Returns
+    -------
+    str
+    """
+    uuid_ = str(uuid.uuid4())
+    if not uuid_[0].isalpha():
+        c = random.choice(["a", "b", "c", "d", "e", "f"])
+        uuid_ = f"{c}{uuid_[1:]}"
+    return uuid_
