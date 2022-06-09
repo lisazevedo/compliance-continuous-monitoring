@@ -6,8 +6,6 @@ RUN pip install -r /app/requirements.txt
 
 COPY . /app/
 
-# RUN pip install /app/
-
 WORKDIR /app/
 
 EXPOSE 8080

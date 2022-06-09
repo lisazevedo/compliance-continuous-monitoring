@@ -8,11 +8,16 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, PlainTextResponse, Response
 
 from database import init_db
+import router
 
 app = FastAPI(
     title="API Agent"
 )
-# app.include_router(api.projects.router)
+
+app.include_router(router.cpus_router)
+app.include_router(router.hosts_router)
+app.include_router(router.processes_router)
+app.include_router(router.users_router)
 
 
 

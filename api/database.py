@@ -6,9 +6,9 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 DB_TENANT = os.getenv("DB_TENANT", "anonymous")
-DB_HOST = os.getenv("MYSQL_DB_HOST", "")
-DB_NAME = os.getenv("MYSQL_DB_NAME", "agent_db")
-DB_USER = os.getenv("MYSQL_DB_USER", "agent_user")
+DB_HOST = os.getenv("MYSQL_DB_HOST", "127.0.0.1:3306")
+DB_NAME = os.getenv("MYSQL_DB_NAME", "agentdb")
+DB_USER = os.getenv("MYSQL_DB_USER", "root")
 DB_PASS = os.getenv("MYSQL_DB_PASSWORD", "")
 DB_URL = f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
 engine = create_engine(

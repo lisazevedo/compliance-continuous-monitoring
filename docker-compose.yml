@@ -11,7 +11,7 @@ services:
     environment:
       - MYSQL_DB_HOST=mysql
       - MYSQL_DB_NAME=agentdb
-      - MYSQL_DB_USER=
+      - MYSQL_DB_USER=agent
       - MYSQL_DB_PASSWORD=
 
   db:
@@ -25,5 +25,5 @@ services:
     environment:
       - MYSQL_DATABASE=agentdb
       - MYSQL_ALLOW_EMPTY_PASSWORD=true
-      - MYSQL_DB_USER=
+      - MYSQL_DB_USER=agent
       - MYSQL_DB_PASSWORD=
