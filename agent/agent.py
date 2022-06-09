@@ -1,25 +1,35 @@
 import os, subprocess, shlex, psutil, sys
+import json
 
 def get_host_ip():
     bashCommand = os.popen("hostname -I | awk '{print $1}'")
     host = bashCommand.read()
     bashCommand.close()
 
-    return host
+    return host.strip('\n')
 
 def get_so_name():
     bashCommand = shlex.split("uname -sn")
     process = subprocess.Popen(bashCommand, stdout=subprocess.PIPE)
     so_name, error = process.communicate()
 
-    return get_host_ip(), so_name.decode("utf-8")
+    obj = {
+        'host': get_host_ip(),
+        'so-name': so_name.decode("utf-8").strip('\n')
+    }
+    return obj
 
 def get_so_version():
     bashCommand = shlex.split("uname -r")
     process = subprocess.Popen(bashCommand, stdout=subprocess.PIPE)
     so_version, error = process.communicate()
 
-    return get_host_ip(), so_version.decode("utf-8")
+    obj = {
+        'host': get_host_ip(),
+        'so-version': so_version.decode("utf-8").strip('\n')
+    }
+
+    return obj
 
 def get_users():
     bashCommand = shlex.split("who")
@@ -30,8 +40,13 @@ def get_users():
     for line in output.splitlines():
         users.append(line.decode("utf-8").split(' ')[0])
     
-    return get_host_ip(), users
+    obj = {
+        'host': get_host_ip(),
+        'users': users
+    }
 
+    return obj
+    
 def get_pid():
     users = os.popen("ps aux | awk '{print $1}'")
     pid = os.popen("ps aux | awk '{print $2}'")
@@ -50,27 +65,37 @@ def get_pid():
     res.popitem()  
     res.pop('PID')
     
-    return get_host_ip(), res
+    obj = {
+        'host': get_host_ip(),
+        'pid': res
+    }
+
+    return obj
 
 def get_usage_cpu():
-    return get_host_ip(), psutil.cpu_percent(2)
+    
+    obj = {
+        'host': get_host_ip(),
+        'cpu-usage': str(psutil.cpu_percent(2))
+    }
+    return obj
         
 if __name__ == '__main__':
 
     if sys.argv[1] == "so-name":
-        get_so_name()
+        print(get_so_name())
     elif sys.argv[1] == "ps":
-        get_pid()
+        print(get_pid())
     elif sys.argv[1] == "users":
-        get_users()
+        print(get_users())
     elif sys.argv[1] == "so-version":
-        get_so_version()
+        print(get_so_version())
     elif sys.argv[1] == "cpu":
-        get_usage_cpu()
+        print(get_usage_cpu())
     else:
         print("\ninvalid option!\n")
         print("python3 "+sys.argv[0]+" so-name    -   Send SO name")
         print("python3 "+sys.argv[0]+" ps         -   Send processes")
         print("python3 "+sys.argv[0]+" users      -   Send online users")
         print("python3 "+sys.argv[0]+" so-version -   Send SO version")
-        print("python3 "+sys.argv[0]+" cpu        -   Send CPU usage")
+        print("python3 "+sys.argv[0]+" cpu        -   Send CPU usage\n")
