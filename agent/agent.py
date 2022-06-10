@@ -15,7 +15,7 @@ def get_so_name():
 
     obj = {
         'host': get_host_ip(),
-        'so-name': so_name.decode("utf-8").strip('\n')
+        'so_name': so_name.decode("utf-8").strip('\n')
     }
     return obj
 
@@ -26,7 +26,7 @@ def get_so_version():
 
     obj = {
         'host': get_host_ip(),
-        'so-version': so_version.decode("utf-8").strip('\n')
+        'so_version': so_version.decode("utf-8").strip('\n')
     }
 
     return obj
@@ -76,7 +76,7 @@ def get_cpu_usage():
     
     obj = {
         'host': get_host_ip(),
-        'cpu-usage': str(psutil.cpu_percent(2))
+        'cpu_usage': str(psutil.cpu_percent(2))
     }
     return obj
         

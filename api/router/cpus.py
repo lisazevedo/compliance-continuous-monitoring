@@ -12,6 +12,13 @@ router = APIRouter(
     prefix="/cpus",
 )
 
+@router.get("")
+def handle_get_all_cpus(
+    session: Session = Depends(database.session_scope)
+):
+    cpu_controller = CpuController(session)
+    cpus = cpu_controller.get_cpus()
+    return cpus
 
 @router.post("")
 def handle_post_cpus(
@@ -21,10 +28,3 @@ def handle_post_cpus(
     cpu_controller = CpuController(session)
     cpus = cpu_controller.create_cpu(cpu)
     return cpus
-
-
-
-
-
-
-

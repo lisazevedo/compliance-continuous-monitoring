@@ -1,0 +1,529 @@
+Resources:
+  privateapivpc77564028:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: PrivateApiStack/private-api-vpc
+  privateapivpcPublicSubnet1Subnet1E6D4A8F:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      CidrBlock: 10.0.0.0/18
+      VpcId: !Ref privateapivpc77564028
+      AvailabilityZone: !Select 
+        - 0
+        - !GetAZs ''
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: 'aws-cdk:subnet-name'
+          Value: Public
+        - Key: 'aws-cdk:subnet-type'
+          Value: Public
+        - Key: Name
+          Value: PrivateApiStack/private-api-vpc/PublicSubnet1
+  privateapivpcPublicSubnet1RouteTable220AD332:
+    Type: 'AWS::EC2::RouteTable'
+    Properties:
+      VpcId: !Ref privateapivpc77564028
+      Tags:
+        - Key: Name
+          Value: PrivateApiStack/private-api-vpc/PublicSubnet1
+  privateapivpcPublicSubnet1RouteTableAssociation2A436FA4:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref privateapivpcPublicSubnet1RouteTable220AD332
+      SubnetId: !Ref privateapivpcPublicSubnet1Subnet1E6D4A8F
+  privateapivpcPublicSubnet1DefaultRouteFD82F4FD:
+    Type: 'AWS::EC2::Route'
+    Properties:
+      RouteTableId: !Ref privateapivpcPublicSubnet1RouteTable220AD332
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref privateapivpcIGWB2D7E529
+    DependsOn:
+      - privateapivpcVPCGW038138D3
+  privateapivpcPublicSubnet1EIPE9BDA2D4:
+    Type: 'AWS::EC2::EIP'
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: PrivateApiStack/private-api-vpc/PublicSubnet1
+  privateapivpcPublicSubnet1NATGateway49E176B5:
+    Type: 'AWS::EC2::NatGateway'
+    Properties:
+      AllocationId: !GetAtt 
+        - privateapivpcPublicSubnet1EIPE9BDA2D4
+        - AllocationId
+      SubnetId: !Ref privateapivpcPublicSubnet1Subnet1E6D4A8F
+      Tags:
+        - Key: Name
+          Value: PrivateApiStack/private-api-vpc/PublicSubnet1
+  privateapivpcPublicSubnet2SubnetD4358746:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      CidrBlock: 10.0.64.0/18
+      VpcId: !Ref privateapivpc77564028
+      AvailabilityZone: !Select 
+        - 1
+        - !GetAZs ''
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: 'aws-cdk:subnet-name'
+          Value: Public
+        - Key: 'aws-cdk:subnet-type'
+          Value: Public
+        - Key: Name
+          Value: PrivateApiStack/private-api-vpc/PublicSubnet2
+  privateapivpcPublicSubnet2RouteTable2FCED24D:
+    Type: 'AWS::EC2::RouteTable'
+    Properties:
+      VpcId: !Ref privateapivpc77564028
+      Tags:
+        - Key: Name
+          Value: PrivateApiStack/private-api-vpc/PublicSubnet2
+  privateapivpcPublicSubnet2RouteTableAssociation7FD8C4E0:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref privateapivpcPublicSubnet2RouteTable2FCED24D
+      SubnetId: !Ref privateapivpcPublicSubnet2SubnetD4358746
+  privateapivpcPublicSubnet2DefaultRoute12A321EC:
+    Type: 'AWS::EC2::Route'
+    Properties:
+      RouteTableId: !Ref privateapivpcPublicSubnet2RouteTable2FCED24D
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref privateapivpcIGWB2D7E529
+    DependsOn:
+      - privateapivpcVPCGW038138D3
+  privateapivpcPublicSubnet2EIPECEDCAAB:
+    Type: 'AWS::EC2::EIP'
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: PrivateApiStack/private-api-vpc/PublicSubnet2
+  privateapivpcPublicSubnet2NATGateway6BD7DA52:
+    Type: 'AWS::EC2::NatGateway'
+    Properties:
+      AllocationId: !GetAtt 
+        - privateapivpcPublicSubnet2EIPECEDCAAB
+        - AllocationId
+      SubnetId: !Ref privateapivpcPublicSubnet2SubnetD4358746
+      Tags:
+        - Key: Name
+          Value: PrivateApiStack/private-api-vpc/PublicSubnet2
+  privateapivpcPrivateSubnet1Subnet7BE99BB4:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      CidrBlock: 10.0.128.0/18
+      VpcId: !Ref privateapivpc77564028
+      AvailabilityZone: !Select 
+        - 0
+        - !GetAZs ''
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: 'aws-cdk:subnet-name'
+          Value: Private
+        - Key: 'aws-cdk:subnet-type'
+          Value: Private
+        - Key: Name
+          Value: PrivateApiStack/private-api-vpc/PrivateSubnet1
+  privateapivpcPrivateSubnet1RouteTableA8908DA2:
+    Type: 'AWS::EC2::RouteTable'
+    Properties:
+      VpcId: !Ref privateapivpc77564028
+      Tags:
+        - Key: Name
+          Value: PrivateApiStack/private-api-vpc/PrivateSubnet1
+  privateapivpcPrivateSubnet1RouteTableAssociation64FF2F63:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref privateapivpcPrivateSubnet1RouteTableA8908DA2
+      SubnetId: !Ref privateapivpcPrivateSubnet1Subnet7BE99BB4
+  privateapivpcPrivateSubnet1DefaultRoute8319F627:
+    Type: 'AWS::EC2::Route'
+    Properties:
+      RouteTableId: !Ref privateapivpcPrivateSubnet1RouteTableA8908DA2
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref privateapivpcPublicSubnet1NATGateway49E176B5
+  privateapivpcPrivateSubnet2Subnet34C136F7:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      CidrBlock: 10.0.192.0/18
+      VpcId: !Ref privateapivpc77564028
+      AvailabilityZone: !Select 
+        - 1
+        - !GetAZs ''
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: 'aws-cdk:subnet-name'
+          Value: Private
+        - Key: 'aws-cdk:subnet-type'
+          Value: Private
+        - Key: Name
+          Value: PrivateApiStack/private-api-vpc/PrivateSubnet2
+  privateapivpcPrivateSubnet2RouteTableCFEB4060:
+    Type: 'AWS::EC2::RouteTable'
+    Properties:
+      VpcId: !Ref privateapivpc77564028
+      Tags:
+        - Key: Name
+          Value: PrivateApiStack/private-api-vpc/PrivateSubnet2
+  privateapivpcPrivateSubnet2RouteTableAssociation13071032:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref privateapivpcPrivateSubnet2RouteTableCFEB4060
+      SubnetId: !Ref privateapivpcPrivateSubnet2Subnet34C136F7
+  privateapivpcPrivateSubnet2DefaultRoute32921C24:
+    Type: 'AWS::EC2::Route'
+    Properties:
+      RouteTableId: !Ref privateapivpcPrivateSubnet2RouteTableCFEB4060
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref privateapivpcPublicSubnet2NATGateway6BD7DA52
+  privateapivpcIGWB2D7E529:
+    Type: 'AWS::EC2::InternetGateway'
+    Properties:
+      Tags:
+        - Key: Name
+          Value: PrivateApiStack/private-api-vpc
+  privateapivpcVPCGW038138D3:
+    Type: 'AWS::EC2::VPCGatewayAttachment'
+    Properties:
+      VpcId: !Ref privateapivpc77564028
+      InternetGatewayId: !Ref privateapivpcIGWB2D7E529
+  privateapivpceSecurityGroup8C8216BD:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: PrivateApiStack/private-api-vpce/SecurityGroup
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: '-1'
+      SecurityGroupIngress:
+        - CidrIp: !GetAtt 
+            - privateapivpc77564028
+            - CidrBlock
+          Description: !Join 
+            - ''
+            - - 'from '
+              - !GetAtt 
+                - privateapivpc77564028
+                - CidrBlock
+              - ':443'
+          FromPort: 443
+          IpProtocol: tcp
+          ToPort: 443
+      VpcId: !Ref privateapivpc77564028
+  privateapivpce487DB922:
+    Type: 'AWS::EC2::VPCEndpoint'
+    Properties:
+      ServiceName: !Join 
+        - ''
+        - - com.amazonaws.
+          - !Ref 'AWS::Region'
+          - .execute-api
+      VpcId: !Ref privateapivpc77564028
+      PrivateDnsEnabled: true
+      SecurityGroupIds:
+        - !GetAtt 
+          - privateapivpceSecurityGroup8C8216BD
+          - GroupId
+      SubnetIds:
+        - !Ref privateapivpcPrivateSubnet1Subnet7BE99BB4
+        - !Ref privateapivpcPrivateSubnet2Subnet34C136F7
+      VpcEndpointType: Interface
+  privateapitestinstanceInstanceSecurityGroupEE1A4FEC:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: >-
+        PrivateApiStack/private-api-test-instance/Resource/InstanceSecurityGroup
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: '-1'
+      Tags:
+        - Key: Name
+          Value: private-api-
+      VpcId: !Ref privateapivpc77564028
+  privateapitestinstanceInstanceRole4DC30CEF:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: 'sts:AssumeRole'
+            Effect: Allow
+            Principal:
+              Service: !Join 
+                - ''
+                - - ec2.
+                  - !Ref 'AWS::URLSuffix'
+        Version: 2012-10-17
+      Tags:
+        - Key: Name
+          Value: private-api-
+  privateapitestinstanceInstanceRoleDefaultPolicyA9CCD2E3:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - 'ssmmessages:*'
+              - 'ssm:UpdateInstanceInformation'
+              - 'ec2messages:*'
+            Effect: Allow
+            Resource: '*'
+        Version: 2012-10-17
+      PolicyName: privateapitestinstanceInstanceRoleDefaultPolicyA9CCD2E3
+      Roles:
+        - !Ref privateapitestinstanceInstanceRole4DC30CEF
+  privateapitestinstanceInstanceProfileFF28A884:
+    Type: 'AWS::IAM::InstanceProfile'
+    Properties:
+      Roles:
+        - !Ref privateapitestinstanceInstanceRole4DC30CEF
+  privateapitestinstance923DEA4B:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      AvailabilityZone: !Select 
+        - 0
+        - !GetAZs ''
+      IamInstanceProfile: !Ref privateapitestinstanceInstanceProfileFF28A884
+      ImageId: >-
+        {{resolve:ssm:/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2}}
+      InstanceType: t3.nano
+      SecurityGroupIds:
+        - !GetAtt 
+          - privateapitestinstanceInstanceSecurityGroupEE1A4FEC
+          - GroupId
+      SubnetId: !Ref privateapivpcPrivateSubnet1Subnet7BE99BB4
+      Tags:
+        - Key: Name
+          Value: private-api-
+      UserData: !Base64 '#!/bin/bash'
+    DependsOn:
+      - privateapitestinstanceInstanceRoleDefaultPolicyA9CCD2E3
+      - privateapitestinstanceInstanceRole4DC30CEF
+  privateapifunctionServiceRoleBB536592:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: 'sts:AssumeRole'
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: 2012-10-17
+      ManagedPolicyArns:
+        - !Join 
+          - ''
+          - - 'arn:'
+            - !Ref 'AWS::Partition'
+            - ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+  privateapifunction62AE1AB4:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Code:
+        ZipFile: >-
+          exports.handler = async (event) => {const response = {statusCode: 200,
+          body: JSON.stringify('Hello from Lambda!'),}; return response;};
+      Role: !GetAtt 
+        - privateapifunctionServiceRoleBB536592
+        - Arn
+      Handler: index.handler
+      Runtime: nodejs12.x
+    DependsOn:
+      - privateapifunctionServiceRoleBB536592
+  privateapiapi562DA165:
+    Type: 'AWS::ApiGateway::RestApi'
+    Properties:
+      EndpointConfiguration:
+        Types:
+          - PRIVATE
+        VpcEndpointIds:
+          - !Ref privateapivpce487DB922
+      Name: private-api-api
+      Policy:
+        Statement:
+          - Action: 'execute-api:Invoke'
+            Effect: Allow
+            Principal: '*'
+            Resource: 'execute-api:/*'
+          - Action: 'execute-api:Invoke'
+            Condition:
+              StringNotEquals:
+                'aws:SourceVpce': !Ref privateapivpce487DB922
+            Effect: Deny
+            Principal: '*'
+            Resource: 'execute-api:/*'
+        Version: 2012-10-17
+  privateapiapiDeploymentCEEC35F0ea92cf6ccbbb140605a3fa3e41a42d3c:
+    Type: 'AWS::ApiGateway::Deployment'
+    Properties:
+      RestApiId: !Ref privateapiapi562DA165
+      Description: Automatically created by the RestApi construct
+    DependsOn:
+      - privateapiapiproxyANYC575DC9B
+      - privateapiapiproxy0E2AC0C6
+      - privateapiapiANY6093FFFE
+  privateapiapiDeploymentStageprod63A0B770:
+    Type: 'AWS::ApiGateway::Stage'
+    Properties:
+      RestApiId: !Ref privateapiapi562DA165
+      DeploymentId: !Ref privateapiapiDeploymentCEEC35F0ea92cf6ccbbb140605a3fa3e41a42d3c
+      StageName: prod
+  privateapiapiproxy0E2AC0C6:
+    Type: 'AWS::ApiGateway::Resource'
+    Properties:
+      ParentId: !GetAtt 
+        - privateapiapi562DA165
+        - RootResourceId
+      PathPart: '{proxy+}'
+      RestApiId: !Ref privateapiapi562DA165
+  privateapiapiproxyANYApiPermissionPrivateApiStackprivateapiapiFBEFF733ANYproxy5F078D00:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !GetAtt 
+        - privateapifunction62AE1AB4
+        - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Join 
+        - ''
+        - - 'arn:'
+          - !Ref 'AWS::Partition'
+          - ':execute-api:'
+          - !Ref 'AWS::Region'
+          - ':'
+          - !Ref 'AWS::AccountId'
+          - ':'
+          - !Ref privateapiapi562DA165
+          - /
+          - !Ref privateapiapiDeploymentStageprod63A0B770
+          - /*/*
+  privateapiapiproxyANYApiPermissionTestPrivateApiStackprivateapiapiFBEFF733ANYproxyDCC3A802:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !GetAtt 
+        - privateapifunction62AE1AB4
+        - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Join 
+        - ''
+        - - 'arn:'
+          - !Ref 'AWS::Partition'
+          - ':execute-api:'
+          - !Ref 'AWS::Region'
+          - ':'
+          - !Ref 'AWS::AccountId'
+          - ':'
+          - !Ref privateapiapi562DA165
+          - /test-invoke-stage/*/*
+  privateapiapiproxyANYC575DC9B:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      HttpMethod: ANY
+      ResourceId: !Ref privateapiapiproxy0E2AC0C6
+      RestApiId: !Ref privateapiapi562DA165
+      AuthorizationType: NONE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Join 
+          - ''
+          - - 'arn:'
+            - !Ref 'AWS::Partition'
+            - ':apigateway:'
+            - !Ref 'AWS::Region'
+            - ':lambda:path/2015-03-31/functions/'
+            - !GetAtt 
+              - privateapifunction62AE1AB4
+              - Arn
+            - /invocations
+  privateapiapiANYApiPermissionPrivateApiStackprivateapiapiFBEFF733ANYF12376E5:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !GetAtt 
+        - privateapifunction62AE1AB4
+        - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Join 
+        - ''
+        - - 'arn:'
+          - !Ref 'AWS::Partition'
+          - ':execute-api:'
+          - !Ref 'AWS::Region'
+          - ':'
+          - !Ref 'AWS::AccountId'
+          - ':'
+          - !Ref privateapiapi562DA165
+          - /
+          - !Ref privateapiapiDeploymentStageprod63A0B770
+          - /*/
+  privateapiapiANYApiPermissionTestPrivateApiStackprivateapiapiFBEFF733ANY39D5F849:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !GetAtt 
+        - privateapifunction62AE1AB4
+        - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Join 
+        - ''
+        - - 'arn:'
+          - !Ref 'AWS::Partition'
+          - ':execute-api:'
+          - !Ref 'AWS::Region'
+          - ':'
+          - !Ref 'AWS::AccountId'
+          - ':'
+          - !Ref privateapiapi562DA165
+          - /test-invoke-stage/*/
+  privateapiapiANY6093FFFE:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      HttpMethod: ANY
+      ResourceId: !GetAtt 
+        - privateapiapi562DA165
+        - RootResourceId
+      RestApiId: !Ref privateapiapi562DA165
+      AuthorizationType: NONE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Join 
+          - ''
+          - - 'arn:'
+            - !Ref 'AWS::Partition'
+            - ':apigateway:'
+            - !Ref 'AWS::Region'
+            - ':lambda:path/2015-03-31/functions/'
+            - !GetAtt 
+              - privateapifunction62AE1AB4
+              - Arn
+            - /invocations
+Outputs:
+  privateapitestinstanceBastionHostIdD29AD641:
+    Description: >-
+      Instance ID of the bastion host. Use this to connect via SSM Session
+      Manager
+    Value: !Ref privateapitestinstance923DEA4B
+  privateapiapiEndpoint8A7425C8:
+    Value: !Join 
+      - ''
+      - - 'https://'
+        - !Ref privateapiapi562DA165
+        - .execute-api.
+        - !Ref 'AWS::Region'
+        - .
+        - !Ref 'AWS::URLSuffix'
+        - /
+        - !Ref privateapiapiDeploymentStageprod63A0B770
+        - /
+  VPCEndpointID:
+    Description: The VPC endpoint ID to use for your private API.
+    Value: !Ref privateapivpce487DB922
