@@ -54,7 +54,9 @@ The database diagram is:
 1. ```docker-compose up -d```
 
 ## Difficulty
-sdsdsd
+
 ## Future improvements
 
 1. Change MySQL container to AWS RDS
+2. Change ImageId, in CloudFormation template, from static to dinamic variable
+3. Change CloudFormation to Terraform

@@ -1,5 +1,5 @@
 import os, subprocess, shlex, psutil, sys
-import json
+
 
 def get_host_ip():
     bashCommand = os.popen("hostname -I | awk '{print $1}'")

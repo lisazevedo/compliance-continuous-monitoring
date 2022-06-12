@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS CloudFormation Sample Template EC2InstanceWithSecurityGroupSample:
+  Create an Amazon EC2 instance running the Debian AMI.'
+Parameters:
+  ### EC2 INSTANCE ###
+  KeyName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
+    Type: AWS::EC2::KeyPair::KeyName
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
+  InstanceType:
+    Description: WebServer EC2 instance type
+    Type: String
+    Default: t2.micro
+    AllowedValues: [t2.micro]
+    ConstraintDescription: must be a valid EC2 instance type.
+  SSHLocation:
+    Description: The IP address range that can be used to SSH to the EC2 instances
+    Type: String
+    MinLength: 9
+    MaxLength: 18
+    Default: 0.0.0.0/0
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+  AvailabilityZone:
+    Type: String
+    Default: sa-east-1a
+Resources:
+  ### EC2 INSTANCE ###
+  EC2Instance1:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref 'InstanceType'
+      AvailabilityZone: !Ref AvailabilityZone
+      SecurityGroups: [!Ref 'InstanceSecurityGroup']
+      KeyName: !Ref 'KeyName'
+      ImageId: 'ami-05331e0d9aa1b9f1c'
+      UserData:
+        Fn::Base64: 
+          !Sub |
+            #!/bin/bash
+            sudo apt update
+            apt install git python3-pip
+            wget https://github.com/lisazevedo/compliance-continuous-monitoring/blob/main/agent/requirements.txt
+            pip3 install -r requirements.txt
+            wget https://raw.githubusercontent.com/lisazevedo/compliance-continuous-monitoring/main/agent/agent.py
+  EC2Instance2:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref 'InstanceType'
+      AvailabilityZone: !Ref AvailabilityZone
+      SecurityGroups: [!Ref 'InstanceSecurityGroup']
+      KeyName: !Ref 'KeyName'
+      ImageId: 'ami-05331e0d9aa1b9f1c'
+      UserData:
+        Fn::Base64: 
+          !Sub |
+            #!/bin/bash
+            apt install git pip3
+            https://github.com/lisazevedo/compliance-continuous-monitoring/blob/main/agent/requirements.txt
+            pip3 install -r requirements.txt
+            wget https://raw.githubusercontent.com/lisazevedo/compliance-continuous-monitoring/main/agent/agent.py
+
+  ### EC2 INSTANCE SECURITY GROUP ###
+  InstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable SSH access via port 22
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: !Ref 'SSHLocation'
+
+  # CommandRunner:
+  #   Type: AWSUtility::CloudFormation::CommandRunner
+  #   Properties:
+  #     Command: 'yum -y install cowsay && cowsay Hello CommandRunner > ./command-output.txt'
