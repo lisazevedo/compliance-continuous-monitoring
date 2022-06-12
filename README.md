@@ -54,7 +54,16 @@ The database diagram is:
 ### How to run with container? *(Make sure that you have installed Docker and docker-compose)*
 1. ```docker-compose up -d```
 
+## AWS 
+``` sh
+sam build -t cfn-template/template.yaml
+sam deploy
+```
+
 ## Difficulty
+
+1. Run commands on EC2 instances via CloudFormation
+2. Define VPC on an ec2 instance via CloudFormation
 
 ## Future improvements
 
@@ -63,3 +72,4 @@ The database diagram is:
 3. Change CloudFormation to Terraform
 4. Use AWS Budgets to monitor costs 
 5. Use AWS WAF to manage API requests
+6. API Key by API Gateway

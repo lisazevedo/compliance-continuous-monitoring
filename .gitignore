@@ -5,3 +5,5 @@ api/model/__pycache__/
 api/router/__pycache__/
 api/schema/__pycache__/
 keys
+cfn-template/.aws-sam/*
+cfn-template/samconfig.toml
