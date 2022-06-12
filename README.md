@@ -5,7 +5,8 @@
 ## Problem
 
 ## Solution
- 
+![DB diagram](/images/template.png)
+
 ### Tools
 | Tools | Version |
 |---   | ---  |
@@ -60,3 +61,5 @@ The database diagram is:
 1. Change MySQL container to AWS RDS
 2. Change ImageId, in CloudFormation template, from static to dinamic variable
 3. Change CloudFormation to Terraform
+4. Use AWS Budgets to monitor costs 
+5. Use AWS WAF to manage API requests
