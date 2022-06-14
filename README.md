@@ -5,7 +5,7 @@
 ## Problem
 
 ## Solution
-
+![Infra diagram](/images/infra.png)
 ### Tools
 
 | Tools | Version |
