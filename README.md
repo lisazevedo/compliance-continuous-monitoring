@@ -5,9 +5,9 @@
 ## Problem
 
 ## Solution
-![DB diagram](/images/template.png)
 
 ### Tools
+
 | Tools | Version |
 |---   | ---  |
 | Language | Python3.8 |
