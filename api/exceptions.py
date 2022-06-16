@@ -1,3 +1,7 @@
+"""
+Useful exception classes that are used to return HTTP errors.
+"""
+
 class ApiException(Exception):
     """
     The base exception class for all APIExceptions.
