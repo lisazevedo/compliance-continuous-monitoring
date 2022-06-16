@@ -229,40 +229,7 @@ Resources:
   #############################
   # LOAD BALANCER
   #############################
-  # LoadBalancer:
-  #   Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-  #   Properties:
-  #     Scheme: internet-facing
-  #     Subnets: 
-  #       - !Ref PublicSubnetIdA
-  #       - subnet-0c50176ec2af55d42
-  #       - subnet-0e8d1c1f6a31976af
-  #     Type: network
 
-  # TargetGroup:
-  #   Type: AWS::ElasticLoadBalancingV2::TargetGroup
-  #   Properties: 
-  #     Port: 80
-  #     Protocol: TCP
-  #     TargetType: instance
-  #     Targets: 
-  #       - Id: !Ref ApiEC2Instance
-  #         Port: !Ref ApiInstancePort
-  #     VpcId: !Ref VpcId
-
-  # Listener:
-  #   Type: AWS::ElasticLoadBalancingV2::Listener
-  #   Properties: 
-  #     DefaultActions: 
-  #       - TargetGroupArn: !Ref TargetGroup
-  #         Type: forward
-  #     LoadBalancerArn: !Ref LoadBalancer
-  #     Port: 80
-  #     Protocol: TCP
-
-#########################
-# API GATEWAY
-#########################
   PrivateSubnet:
     Type: AWS::EC2::Subnet
     Properties:
@@ -308,8 +275,8 @@ Resources:
         - !Ref LoadBalancer
 
 #############################
-  # API
-  #############################
+# API
+#############################
 
   Api:
     Type: AWS::Serverless::Api
