@@ -4,32 +4,25 @@ services:
     build: api/
     restart: always
     depends_on:
-      - db
+      - mysql
     ports:
       - 80:8080
+    links:
+      - mysql
     command: ["--host", "0.0.0.0","--port","8080"]
     environment:
       - MYSQL_DB_HOST=mysql
       - MYSQL_DB_NAME=agentdb
-      - MYSQL_DB_USER=agent
-      - MYSQL_DB_PASSWORD=/run/secrets/db_password
-    secrets:
-      - db_password
-  db:
-    container_name: "mysql"
-    image: mysql:8.0.3
+      - MYSQL_DB_USER=root
+      - MYSQL_DB_PASSWORD= 
+  mysql:
+    image: mysql:latest 
     restart: always
     volumes:
       - ./data:/var/lib/mysql
     ports:
-      - 3306:3306
+      - "3306"
     environment:
       - MYSQL_DATABASE=agentdb
+      - MYSQL_USER=root
       - MYSQL_ALLOW_EMPTY_PASSWORD=true
-      - MYSQL_DB_USER=agent
-      - MYSQL_DB_PASSWORD=/run/secrets/db_password
-    secrets:
-      - db_password
-secrets:
-    db_password:
-      file:db_password.txt

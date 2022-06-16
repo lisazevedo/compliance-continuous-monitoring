@@ -14,7 +14,7 @@ def get_so_name():
     so_name, error = process.communicate()
 
     obj = {
-        'host': get_host_ip(),
+        'ip': get_host_ip(),
         'so_name': so_name.decode("utf-8").strip('\n')
     }
     return obj
@@ -25,7 +25,7 @@ def get_so_version():
     so_version, error = process.communicate()
 
     obj = {
-        'host': get_host_ip(),
+        'ip': get_host_ip(),
         'so_version': so_version.decode("utf-8").strip('\n')
     }
 
@@ -54,20 +54,23 @@ def get_pid():
     outputPid = list(pid.read().split("\n"))
     users.close()
     pid.close()
-
-    res = {}
+    processes = []
     for key in outputPid:
         for value in outputUsers:
-            res[key] = value
+            obj = {
+                "pid": key,
+                "user": value
+            }
+            processes.append(obj)
             outputUsers.remove(value)
             break
     
-    res.popitem()  
-    res.pop('PID')
+    processes.pop(0)
+    del processes[-1]
     
     obj = {
         'host': get_host_ip(),
-        'pid': res
+        'processes': processes
     }
 
     return obj

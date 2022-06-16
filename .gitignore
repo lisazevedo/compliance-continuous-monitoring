@@ -7,4 +7,3 @@ api/schema/__pycache__/
 keys
 cfn-template/.aws-sam/*
 cfn-template/samconfig.toml
-db_password.txt
