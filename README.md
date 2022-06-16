@@ -24,7 +24,7 @@ Generate a program (agent) that can be executed on one of our servers, and from 
 
 ## Solution
 
-![Infra diagram](/images/infra.png)
+![Infra diagram](/images/infra-done.png)
 ### Tools
 
 | Tools | Version |
