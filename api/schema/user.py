@@ -27,6 +27,21 @@ class User(UserBase):
             created_at=model.created_at
         )
 
+class UserGet(UserBase):
+    uuid: str
+    name: str
+    created_at: datetime
+    host: str
+
+    @classmethod
+    def from_orm(cls, model):
+        return UserGet(
+            uuid=model.uuid,
+            host=model.ip,
+            name=model.name,
+            created_at=model.created_at
+        )
+
 class UserList(UserBase):
     users: List[User]
     total: int
@@ -35,5 +50,16 @@ class UserList(UserBase):
     def from_orm(cls, models, total):
         return UserList(
             users=[User.from_orm(model) for model in models],
+            total=total
+        )
+
+class UserListGet(UserBase):
+    users: List[UserGet]
+    total: int
+
+    @classmethod
+    def from_orm(cls, models, total):
+        return UserListGet(
+            users=[UserGet.from_orm(model) for model in models],
             total=total
         )

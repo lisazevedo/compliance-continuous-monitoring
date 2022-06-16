@@ -1,8 +1,8 @@
 import os, subprocess, shlex, psutil, sys
 import requests
 
-URL = os.getenv("URL_API", "")
-TOKEN = 'users_token'
+URL = os.getenv("URL_API", "http://127.0.0.1")
+TOKEN = 'users_token' #CHANGE THIS
 
 def get_host_ip():
     bashCommand = os.popen("hostname -I | awk '{print $1}'")

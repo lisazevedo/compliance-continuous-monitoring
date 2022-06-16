@@ -1,4 +1,5 @@
 import model
+from model import User, Host
 import schema
 
 from exceptions import InternalServerError, BadRequest, NotFound
@@ -27,13 +28,18 @@ class UserController:
         if not ip:
             raise BadRequest(code="userGet", message="missing host parameter in get users")
 
-        host = self.session.query(model.Host).filter_by(ip=ip).first()
+        host = self.session.query(Host).filter_by(ip=ip).first()
 
         if not host:
             raise NotFound(code="userGet", message="could not find host with this ip")
 
-        users = self.session.query(model.User).filter_by(host_id=host.uuid).order_by(model.User.created_at.asc()).all()
-        return schema.UserList.from_orm(users, len(users))
+        users = self.session.query(User)\
+                .filter_by(host_id=host.uuid)\
+                .join(Host, User.host_id == Host.uuid)\
+                .add_columns(User.uuid, User.name, User.created_at, Host.ip)\
+                .order_by(User.created_at.asc()).all()
+
+        return schema.UserListGet.from_orm(users, len(users))
 
     def create_user(self, req: schema.UserCreate):
         """

@@ -1,4 +1,5 @@
 import model
+from model import Cpu, Host
 import schema
 
 from exceptions import InternalServerError
@@ -20,7 +21,11 @@ class CpuController:
         """
 
         try:
-            cpus = (self.session.query(model.Cpu).order_by(model.Cpu.created_at.asc()).all())
+            cpus = (self.session.query(Cpu)\
+                    .join(Host, Cpu.host_id == Host.uuid)\
+                    .add_columns(Cpu.cpu_usage, Cpu.created_at, Host.ip)\
+                    .order_by(Cpu.created_at.asc()).all())
+        
             return schema.CpuList.from_orm(cpus, len(cpus))
         except:
             raise InternalServerError(code="cpuGetAll", message="error when retrieving cpus")

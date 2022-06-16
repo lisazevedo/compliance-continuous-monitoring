@@ -12,20 +12,17 @@ class CpuCreate(CpuBase):
     host: str
     cpu_usage: str
 class Cpu(CpuBase):
-    uuid: str
     cpu_usage: str
-    host_id: str
     created_at: datetime
+    host: str
 
     @classmethod
     def from_orm(cls, model):
         return Cpu(
-            uuid=model.uuid,
             cpu_usage=model.cpu_usage,
-            host_id=model.host_id,
             created_at=model.created_at,
+            host=model.ip
         )
-
 class CpuList(CpuBase):
     cpus: List[Cpu]
     total: int

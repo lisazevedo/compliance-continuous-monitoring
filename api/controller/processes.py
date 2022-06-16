@@ -1,5 +1,6 @@
 import schema
 import model
+from model import Process, Host
 
 from exceptions import InternalServerError, BadRequest, NotFound
 from utils import uuid_alpha, now
@@ -27,13 +28,18 @@ class ProcessController:
         if not ip:
             raise BadRequest(code="processGet", message="missing host parameter in get processes")
 
-        host = self.session.query(model.Host).filter_by(ip=ip).first()
+        host = self.session.query(Host).filter_by(ip=ip).first()
 
         if not host:
             raise NotFound(code="processGet", message="could not find host with this ip")
 
-        processes = self.session.query(model.Process).filter_by(host_id=host.uuid).order_by(model.Process.created_at.asc()).all()
-        return schema.ProcessList.from_orm(processes, len(processes))
+        processes = self.session.query(Process)\
+                    .filter_by(host_id=host.uuid)\
+                    .join(Host, Process.host_id == Host.uuid)\
+                    .add_columns(Process.uuid, Process.user, Process.pid, Process.created_at, Host.ip)\
+                    .order_by(Process.created_at.asc()).all()
+
+        return schema.ProcessListGet.from_orm(processes, len(processes))
 
     def create_processes(self, req: schema.ProcessCreate):
         """

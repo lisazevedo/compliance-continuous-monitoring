@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -18,7 +18,7 @@ class ProcessCreate(ProcessBase):
 
 class Process(ProcessBase):
     uuid: str
-    host_id: str
+    host_id: Optional[str]
     user: str
     pid: str
     created_at: datetime
@@ -30,7 +30,24 @@ class Process(ProcessBase):
             host_id=model.host_id,
             user=model.user,
             pid=model.pid,
-            created_at=model.created_at
+            created_at=model.created_at,
+        )
+
+class ProcessGet(ProcessBase):
+    uuid: str
+    user: str
+    pid: str
+    created_at: datetime
+    host: Optional[str]
+
+    @classmethod
+    def from_orm(cls, model):
+        return ProcessGet(
+            uuid=model.uuid,
+            user=model.user,
+            pid=model.pid,
+            created_at=model.created_at,
+            host=model.ip
         )
 
 class ProcessList(ProcessBase):
@@ -41,5 +58,16 @@ class ProcessList(ProcessBase):
     def from_orm(cls, models, total):
         return ProcessList(
             processes=[Process.from_orm(model) for model in models],
+            total=total
+        )
+
+class ProcessListGet(ProcessBase):
+    processes: List[ProcessGet]
+    total: int
+
+    @classmethod
+    def from_orm(cls, models, total):
+        return ProcessListGet(
+            processes=[ProcessGet.from_orm(model) for model in models],
             total=total
         )
