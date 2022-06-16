@@ -83,7 +83,7 @@ The database diagram is:
 
 ## AWS 
 ``` sh
-sam build -t cfn-template/template.yaml
+sam build -t cfn-template/main.yml
 sam deploy
 ```
 
