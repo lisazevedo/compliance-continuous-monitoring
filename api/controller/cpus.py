@@ -1,5 +1,5 @@
-import model as models
-import schema as schemas
+import model
+import schema
 
 from exceptions import InternalServerError
 from utils import uuid_alpha, now
@@ -20,12 +20,12 @@ class CpuController:
         """
 
         try:
-            cpus = (self.session.query(models.Cpu).order_by(models.Cpu.created_at.asc()).all())
-            return schemas.CpuList.from_orm(cpus, len(cpus))
+            cpus = (self.session.query(model.Cpu).order_by(model.Cpu.created_at.asc()).all())
+            return schema.CpuList.from_orm(cpus, len(cpus))
         except:
             raise InternalServerError(code="cpuGetAll", message="error when retrieving cpus")
 
-    def create_cpu(self, cpu: schemas.CpuCreate):
+    def create_cpu(self, cpu: schema.CpuCreate):
         """
         Creates a new cpu in our database.
         Parameters
@@ -41,17 +41,17 @@ class CpuController:
         """
 
         try:
-            host = self.session.query(models.Host).filter_by(ip=cpu.host).first()
+            host = self.session.query(model.Host).filter_by(ip=cpu.host).first()
 
             if not host:
-                host = models.Host(
+                host = model.Host(
                     uuid=uuid_alpha(),
                     ip=cpu.host
                 )
                 self.session.add(host)
                 self.session.flush()
             
-            cpu = models.Cpu(
+            cpu = model.Cpu(
                 uuid=uuid_alpha(),
                 cpu_usage=cpu.cpu_usage,
                 host_id=host.uuid,

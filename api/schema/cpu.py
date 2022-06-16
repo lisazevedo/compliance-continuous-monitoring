@@ -1,7 +1,7 @@
 from datetime import datetime
-from typing import List, Optional, Tuple
+from typing import List
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 
 class CpuBase(BaseModel):
     class Config:
