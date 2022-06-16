@@ -49,8 +49,10 @@ Responsible for capturing, from a host, metrics like:
 And send to API.
 ### How to run locally? *(Make sure that you have installed python3)*
 1. ```pip3 install -r api/requirements.txt```
-2. ```python3 agent.py so-name```
+2. ```python3 agent/agent.py so-name```
 3. ```export URL_API=http://{API_ENDPOINT} ```
+
+*Make sure that you have set TOKEN environment in agent.py file*
 ### How to use? 
 
 ``` sh
@@ -78,8 +80,8 @@ The database diagram is:
 - GET Requests:
     - http://${API_ENDPOINT}/cpus
     - http://${API_ENDPOINT}/hosts
-    - http://${API_ENDPOINT}/processes?={IP_HOST}
-    - http://${API_ENDPOINT}/users?={IP_HOST}
+    - http://${API_ENDPOINT}/processes?ip={IP_HOST}
+    - http://${API_ENDPOINT}/users?ip={IP_HOST}
 
 ## AWS 
 ``` sh
@@ -87,14 +89,15 @@ sam build -t cfn-template/main.yml
 sam deploy
 ```
 
-## Difficulty
+## Difficulties
 
 1. Run commands on EC2 instances via CloudFormation
 2. Define VPC on an EC2 instance via CloudFormation
+3. Create API key via CloudFormation
 
 ## Future improvements
 
-1. Change MySQL container to AWS RDS
+1. Change MySQL container to AWS RDS MySQL
 4. Use AWS Budgets to monitor costs 
 5. Use AWS WAF to manage API requests
 6. Create API Key via CloudFormation
