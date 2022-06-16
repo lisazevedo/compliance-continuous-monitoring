@@ -1,7 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: 'AWS::Serverless-2016-10-31'
-Description: 'AWS CloudFormation Sample Template EC2InstanceWithSecurityGroupSample:
-  Create an Amazon EC2 instance running the Debian AMI.'
+Description: ''
 Parameters:
   ### EC2 INSTANCE ###
   StageName:
@@ -32,16 +31,26 @@ Parameters:
   AvailabilityZone:
     Type: String
     Default: sa-east-1a
+  
+  AmiId:
+    Type: String
+    Default: ami-05331e0d9aa1b9f1c
+    Description: AMI id 
 
-  InstancePort:
+  ApiInstancePort:
     Type: String
     Default: 80
     Description: The port on which the EC2 instance is listening
-
-  PublicSubnetId:
+  
+  PrivateSubnetCIDR:
+    Description: Please enter the IP range (CIDR notation) for the private subnet in the first Availability Zone
+    Type: String
+    Default: 172.31.48.0/20
+  
+  PublicSubnetIdA:
     Description: Default Public Subnet ID
     Type: String
-    Default: subnet-0e8d1c1f6a31976af
+    Default: subnet-04a6648f9626fec1b
 
   VpcId:
     Description: Default VPC ID
@@ -53,35 +62,91 @@ Resources:
   # EC2
   #############################
 
-  AgentASG:
-    Type: AWS::AutoScaling::AutoScalingGroup
+  Agent1EC2Instance:
+    Type: AWS::EC2::Instance
     Properties:
-      VPCZoneIdentifier:
-        - !Ref PublicSubnetId
-      LaunchConfigurationName: !Ref LaunchConfiguration
-      MinSize: '2'
-      MaxSize: '2'
-      DesiredCapacity: '2'
-
-  LaunchConfiguration:
-    Type: AWS::AutoScaling::LaunchConfiguration
-    Properties:
-      ImageId: ami-05331e0d9aa1b9f1c
+      Tags: 
+        - Key: "Name"
+          Value: "Agent"
+      InstanceType: !Ref 'InstanceType'
+      AvailabilityZone: !Ref AvailabilityZone
       SecurityGroups: [!Ref 'AgentInstanceSecurityGroup']
-      InstanceType: t2.micro
+      Monitoring: true
+      KeyName: !Ref 'KeyName'
+      ImageId: !Ref 'AmiId'
+      UserData: 
+        Fn::Base64: !Sub |
+          Content-Type: multipart/mixed; boundary="//"
+          MIME-Version: 1.0
 
-  # AgentEC2Instance:
-  #   Type: AWS::EC2::Instance
-  #   Properties:
-  #     Tags: 
-  #       - Key: "Name"
-  #         Value: "Agent"
-  #     InstanceType: !Ref 'InstanceType'
-  #     AvailabilityZone: !Ref AvailabilityZone
-  #     SecurityGroups: [!Ref 'AgentInstanceSecurityGroup']
-  #     Monitoring: true
-  #     KeyName: !Ref 'KeyName'
-  #     ImageId: 'ami-05331e0d9aa1b9f1c'
+          --//
+          Content-Type: text/cloud-config; charset="us-ascii"
+          MIME-Version: 1.0
+          Content-Transfer-Encoding: 7bit
+          Content-Disposition: attachment; filename="cloud-config.txt"
+
+          #cloud-config
+          cloud_final_modules:
+          - [scripts-user, always]
+
+          --//
+          Content-Type: text/x-shellscript; charset="us-ascii"
+          MIME-Version: 1.0
+          Content-Transfer-Encoding: 7bit
+          Content-Disposition: attachment; filename="userdata.txt"
+
+          #!/bin/bash
+          su admin -c "export URL_API = !GetAtt ApiEC2Instance.PublicIp"
+          sudo apt update -y
+          su admin -c "sudo apt install python3-pip -y"
+          cd /home/admin
+          su admin -c "wget https://raw.githubusercontent.com/lisazevedo/compliance-continuous-monitoring/main/agent/requirements.txt"
+          su admin -c "pip3 install -r requirements.txt"
+          su admin -c "wget https://raw.githubusercontent.com/lisazevedo/compliance-continuous-monitoring/main/agent/agent.py"
+          --//--
+
+  Agent2EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      Tags: 
+        - Key: "Name"
+          Value: "Agent"
+      InstanceType: !Ref 'InstanceType'
+      AvailabilityZone: !Ref AvailabilityZone
+      SecurityGroups: [!Ref 'AgentInstanceSecurityGroup']
+      Monitoring: true
+      KeyName: !Ref 'KeyName'
+      ImageId: !Ref 'AmiId'
+      UserData: 
+        Fn::Base64: !Sub |
+          Content-Type: multipart/mixed; boundary="//"
+          MIME-Version: 1.0
+
+          --//
+          Content-Type: text/cloud-config; charset="us-ascii"
+          MIME-Version: 1.0
+          Content-Transfer-Encoding: 7bit
+          Content-Disposition: attachment; filename="cloud-config.txt"
+
+          #cloud-config
+          cloud_final_modules:
+          - [scripts-user, always]
+
+          --//
+          Content-Type: text/x-shellscript; charset="us-ascii"
+          MIME-Version: 1.0
+          Content-Transfer-Encoding: 7bit
+          Content-Disposition: attachment; filename="userdata.txt"
+
+          #!/bin/bash
+          su admin -c "export URL_API = !GetAtt ApiEC2Instance.PublicIp"
+          sudo apt update -y
+          su admin -c "sudo apt install python3-pip -y"
+          cd /home/admin
+          su admin -c "wget https://raw.githubusercontent.com/lisazevedo/compliance-continuous-monitoring/main/agent/requirements.txt"
+          su admin -c "pip3 install -r requirements.txt"
+          su admin -c "wget https://raw.githubusercontent.com/lisazevedo/compliance-continuous-monitoring/main/agent/agent.py"
+          --//--
 
   ApiEC2Instance:
     Type: AWS::EC2::Instance
@@ -94,7 +159,48 @@ Resources:
       SecurityGroups: [!Ref 'ApiInstanceSecurityGroup']
       Monitoring: true
       KeyName: !Ref 'KeyName'
-      ImageId: 'ami-05331e0d9aa1b9f1c'
+      ImageId: !Ref 'AmiId'
+      UserData: 
+        Fn::Base64: !Sub |
+          Content-Type: multipart/mixed; boundary="//"
+          MIME-Version: 1.0
+
+          --//
+          Content-Type: text/cloud-config; charset="us-ascii"
+          MIME-Version: 1.0
+          Content-Transfer-Encoding: 7bit
+          Content-Disposition: attachment; filename="cloud-config.txt"
+
+          #cloud-config
+          cloud_final_modules:
+          - [scripts-user, always]
+
+          --//
+          Content-Type: text/x-shellscript; charset="us-ascii"
+          MIME-Version: 1.0
+          Content-Transfer-Encoding: 7bit
+          Content-Disposition: attachment; filename="userdata.txt"
+
+          #!/bin/bash
+          cd /home/admin
+          su admin -c "sudo apt-get update -y"
+          su admin -c "sudo apt-get install -y ca-certificates -y curl -y git -y gnupg -y lsb-release -y"
+          su admin -c "git clone https://github.com/lisazevedo/compliance-continuous-monitoring.git"
+          sudo mkdir -p /etc/apt/keyrings
+          curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+          echo \
+          "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+          $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+          su admin -c "sudo apt-get update -y"
+          su admin -c "sudo apt-get install docker-ce -y docker-ce-cli -y containerd.io -y docker-compose-plugin -y docker-compose -y"
+          su admin -c "sudo systemctl start docker"
+          su admin -c "sudo groupadd docker"
+          su admin -c "sudo usermod -aG docker $USER"
+          su admin -c "source ~/.bashrc"
+          git clone https://github.com/lisazevedo/compliance-continuous-monitoring.git
+          cd compliance-continuous-monitoring
+          docker-compose up -d 
+          --//--
 
   ApiInstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -123,13 +229,47 @@ Resources:
   #############################
   # LOAD BALANCER
   #############################
-  LoadBalancer:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+  # LoadBalancer:
+  #   Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+  #   Properties:
+  #     Scheme: internet-facing
+  #     Subnets: 
+  #       - !Ref PublicSubnetIdA
+  #       - subnet-0c50176ec2af55d42
+  #       - subnet-0e8d1c1f6a31976af
+  #     Type: network
+
+  # TargetGroup:
+  #   Type: AWS::ElasticLoadBalancingV2::TargetGroup
+  #   Properties: 
+  #     Port: 80
+  #     Protocol: TCP
+  #     TargetType: instance
+  #     Targets: 
+  #       - Id: !Ref ApiEC2Instance
+  #         Port: !Ref ApiInstancePort
+  #     VpcId: !Ref VpcId
+
+  # Listener:
+  #   Type: AWS::ElasticLoadBalancingV2::Listener
+  #   Properties: 
+  #     DefaultActions: 
+  #       - TargetGroupArn: !Ref TargetGroup
+  #         Type: forward
+  #     LoadBalancerArn: !Ref LoadBalancer
+  #     Port: 80
+  #     Protocol: TCP
+
+#########################
+# API GATEWAY
+#########################
+  PrivateSubnet:
+    Type: AWS::EC2::Subnet
     Properties:
-      Scheme: internet-facing
-      Subnets: 
-        - !Ref PublicSubnetId
-      Type: network
+      VpcId: !Ref VpcId
+      AvailabilityZone: !Select [ 0, !GetAZs  '' ]
+      CidrBlock: !Ref PrivateSubnetCIDR
+      MapPublicIpOnLaunch: false
 
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -139,8 +279,16 @@ Resources:
       TargetType: instance
       Targets: 
         - Id: !Ref ApiEC2Instance
-          Port: !Ref InstancePort
+          Port: !Ref ApiInstancePort
       VpcId: !Ref VpcId
+
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Scheme: internal
+      Subnets: 
+        - !Ref PrivateSubnet
+      Type: network
 
   Listener:
     Type: AWS::ElasticLoadBalancingV2::Listener
@@ -159,7 +307,7 @@ Resources:
       TargetArns: 
         - !Ref LoadBalancer
 
-  #############################
+#############################
   # API
   #############################
 
@@ -167,17 +315,6 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: !Ref StageName
-      Auth:
-        Authorizers:
-          MyLambdaAuthorizer:
-            FunctionArn: !GetAtt AuthFunctions.Arn
-            FunctionPayloadType: TOKEN
-            Identity:
-              # Must specify at least one of
-              # Headers, QueryStrings, StageVariables, or Context
-              Headers:
-                - authorizationToken
-              ReauthorizeEvery: 100
       Cors:
         AllowMethods: "'GET,POST,OPTIONS'"
         AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
@@ -192,14 +329,14 @@ Resources:
                 connectionType: VPC_LINK
                 httpMethod: GET
                 type: http_proxy
-                uri: !Join ["", ["http://", !GetAtt LoadBalancer.DNSName, "/ec2_endpoint"]]
+                uri: !Join ["", ["http://", !GetAtt LoadBalancer.DNSName, "/users"]]
             post:
               x-amazon-apigateway-integration:
                 connectionId: !Ref VpcLink
                 connectionType: VPC_LINK
                 httpMethod: POST
                 type: http_proxy
-                uri: !Join ["", ["http://", !GetAtt LoadBalancer.DNSName, "/ec2_endpoint"]]
+                uri: !Join ["", ["http://", !GetAtt LoadBalancer.DNSName, "/users"]]
           /cpus:
             get:
               x-amazon-apigateway-integration:
@@ -207,14 +344,14 @@ Resources:
                 connectionType: VPC_LINK
                 httpMethod: GET
                 type: http_proxy
-                uri: !Join ["", ["http://", !GetAtt LoadBalancer.DNSName, "/ec2_endpoint"]]
+                uri: !Join ["", ["http://", !GetAtt LoadBalancer.DNSName, "/cpus"]]
             post:
               x-amazon-apigateway-integration:
                 connectionId: !Ref VpcLink
                 connectionType: VPC_LINK
                 httpMethod: POST
                 type: http_proxy
-                uri: !Join ["", ["http://", !GetAtt LoadBalancer.DNSName, "/ec2_endpoint"]]
+                uri: !Join ["", ["http://", !GetAtt LoadBalancer.DNSName, "/cpus"]]
           /hosts:
             get:
               x-amazon-apigateway-integration:
@@ -222,14 +359,14 @@ Resources:
                 connectionType: VPC_LINK
                 httpMethod: GET
                 type: http_proxy
-                uri: !Join ["", ["http://", !GetAtt LoadBalancer.DNSName, "/ec2_endpoint"]]
+                uri: !Join ["", ["http://", !GetAtt LoadBalancer.DNSName, "/hosts"]]
             post:
               x-amazon-apigateway-integration:
                 connectionId: !Ref VpcLink
                 connectionType: VPC_LINK
                 httpMethod: POST
                 type: http_proxy
-                uri: !Join ["", ["http://", !GetAtt LoadBalancer.DNSName, "/ec2_endpoint"]]  
+                uri: !Join ["", ["http://", !GetAtt LoadBalancer.DNSName, "/hosts"]]  
           /processes:
             get:
               x-amazon-apigateway-integration:
@@ -237,59 +374,11 @@ Resources:
                 connectionType: VPC_LINK
                 httpMethod: GET
                 type: http_proxy
-                uri: !Join ["", ["http://", !GetAtt LoadBalancer.DNSName, "/ec2_endpoint"]]
+                uri: !Join ["", ["http://", !GetAtt LoadBalancer.DNSName, "/processes"]]
             post:
               x-amazon-apigateway-integration:
                 connectionId: !Ref VpcLink
                 connectionType: VPC_LINK
                 httpMethod: POST
                 type: http_proxy
-                uri: !Join ["", ["http://", !GetAtt LoadBalancer.DNSName, "/ec2_endpoint"]]
-
-  AuthFunctions:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: ../authorizer/
-      Handler: handler.authorize
-      Runtime: python3.8
-      Events:
-        ApiKey:
-          Type: Api
-          Properties:
-            Path: /
-            RestApiId: !Ref Api
-            Method: get
-            Auth:
-              ApiKeyRequired: true
-
-  ApiUsagePlan:
-    Type: 'AWS::ApiGateway::UsagePlan'
-    Properties:
-      ApiStages:
-        - ApiId: !Ref Api
-          Stage: !Ref StageName
-      Description: API usage plan
-      Quota:
-        Limit: 5000
-        Period: MONTH
-      Throttle:
-        BurstLimit: 200
-        RateLimit: 100
-      UsagePlanName: Plan_API
-
-  ApiKey:
-    Type: 'AWS::ApiGateway::ApiKey'
-    Properties:
-      Name: AgentKey
-      Description: CloudFormation API Key V1
-      Enabled: true
-      StageKeys:
-        - RestApiId: !Ref Api
-          StageName: !Ref StageName
-
-  usagePlanKey:
-    Type: 'AWS::ApiGateway::UsagePlanKey'
-    Properties:
-      KeyId: !Ref ApiKey
-      KeyType: API_KEY
-      UsagePlanId: !Ref ApiUsagePlan
+                uri: !Join ["", ["http://", !GetAtt LoadBalancer.DNSName, "/processes"]]

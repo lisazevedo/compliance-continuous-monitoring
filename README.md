@@ -1,10 +1,29 @@
 # Compliance Continuous Monitoring
 
 ## Premise
+The agent must do:
+- List of running processes.
+- Users with an open session in the system.
+- Name of the operating system.
+- Version of the operating system. 
+
+The API must consist of:
+- An application with an endpoint that allows the agent to send
+the information collected
+- Stored the information collected on normalized DB
+
+Must have:
+- Server must be running on an AWS EC2 instance
+- Containerize the application
+- Documentation 
+- Detail of what other functionality you think we could implement in this system in the future
+- Build infrastructure using CloudFormation
 
 ## Problem
+Generate a program (agent) that can be executed on one of our servers, and from different commands of the operating system, can send the following data to an application (API).
 
 ## Solution
+
 ![Infra diagram](/images/infra.png)
 ### Tools
 
@@ -31,6 +50,7 @@ And send to API.
 ### How to run locally? *(Make sure that you have installed python3)*
 1. ```pip3 install -r api/requirements.txt```
 2. ```python3 agent.py so-name```
+3. ```export URL_API=http://{API_ENDPOINT} ```
 ### How to use? 
 
 ``` sh
@@ -54,6 +74,13 @@ The database diagram is:
 ### How to run with container? *(Make sure that you have installed Docker and docker-compose)*
 1. ```docker-compose up -d```
 
+### How to use?
+- GET Requests:
+    - http://${API_ENDPOINT}/cpus
+    - http://${API_ENDPOINT}/hosts
+    - http://${API_ENDPOINT}/processes?={IP_HOST}
+    - http://${API_ENDPOINT}/users?={IP_HOST}
+
 ## AWS 
 ``` sh
 sam build -t cfn-template/template.yaml
@@ -63,13 +90,11 @@ sam deploy
 ## Difficulty
 
 1. Run commands on EC2 instances via CloudFormation
-2. Define VPC on an ec2 instance via CloudFormation
+2. Define VPC on an EC2 instance via CloudFormation
 
 ## Future improvements
 
 1. Change MySQL container to AWS RDS
-2. Change ImageId, in CloudFormation template, from static to dinamic variable
-3. Change CloudFormation to Terraform
 4. Use AWS Budgets to monitor costs 
 5. Use AWS WAF to manage API requests
-6. API Key by API Gateway
+6. Create API Key via CloudFormation

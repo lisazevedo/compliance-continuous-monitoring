@@ -1,5 +1,8 @@
 import os, subprocess, shlex, psutil, sys
+import requests
 
+URL = os.getenv("URL_API", "")
+TOKEN = 'users_token'
 
 def get_host_ip():
     bashCommand = os.popen("hostname -I | awk '{print $1}'")
@@ -86,15 +89,15 @@ def get_cpu_usage():
 if __name__ == '__main__':
 
     if sys.argv[1] == "so-name":
-        print(get_so_name())
+       requests.post(URL+"/hosts", json = get_so_name(), headers={'x-api-key':TOKEN})
     elif sys.argv[1] == "ps":
-        print(get_pid())
+        requests.post(URL+"/processes", json = get_pid(), headers={'x-api-key':TOKEN})
     elif sys.argv[1] == "users":
-        print(get_users())
+        requests.post(URL+"/users", json = get_users(), headers={'x-api-key':TOKEN})
     elif sys.argv[1] == "so-version":
-        print(get_so_version())
+        requests.post(URL+"/hosts", json = get_so_version(),headers={'x-api-key':TOKEN})
     elif sys.argv[1] == "cpu":
-        print(get_cpu_usage())
+        requests.post(URL+"/cpus", json = get_cpu_usage(), headers={'x-api-key':TOKEN})
     else:
         print("\ninvalid option!\n")
         print("python3 "+sys.argv[0]+" so-name    -   Send SO name")
